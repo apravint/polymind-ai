@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PolyMind AI - Multi-LLM Orchestrator & Consensus Engine</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Highlight.js for Code Highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- App Header -->
+        <header class="app-header">
+            <div class="brand">
+                <div class="brand-logo">
+                    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2">
+                        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                        <polyline points="2 17 12 22 22 17"></polyline>
+                        <polyline points="2 12 12 17 22 12"></polyline>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <h1>PolyMind <span>AI</span></h1>
+                    <span class="badge">Multi-LLM Consensus v1.0</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button id="apiKeyModalBtn" class="btn btn-secondary btn-sm" title="Configure API Keys">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.778-7.778zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
+                    <span>API Keys</span>
+                </button>
+                <button id="themeToggleBtn" class="icon-btn" title="Toggle Theme">
+                    <svg class="sun-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg>
+                    <svg class="moon-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Prompt Control Center -->
+        <section class="card prompt-card">
+            <div class="card-header">
+                <h2>Prompt Orchestrator</h2>
+                <span class="sub-label">Query ChatGPT, Claude, Gemini & Ollama simultaneously</span>
+            </div>
+
+            <!-- Active Provider Toggles -->
+            <div class="provider-selector-bar">
+                <label class="provider-chip active" data-provider="openai">
+                    <input type="checkbox" id="checkOpenAI" checked>
+                    <span class="provider-dot provider-openai"></span>
+                    <span>ChatGPT (GPT-4o)</span>
+                </label>
+                <label class="provider-chip active" data-provider="claude">
+                    <input type="checkbox" id="checkClaude" checked>
+                    <span class="provider-dot provider-claude"></span>
+                    <span>Claude (3.5 Sonnet)</span>
+                </label>
+                <label class="provider-chip active" data-provider="gemini">
+                    <input type="checkbox" id="checkGemini" checked>
+                    <span class="provider-dot provider-gemini"></span>
+                    <span>Gemini (1.5 Pro)</span>
+                </label>
+                <label class="provider-chip active" data-provider="ollama">
+                    <input type="checkbox" id="checkOllama" checked>
+                    <span class="provider-dot provider-ollama"></span>
+                    <span>Ollama (Local LLM)</span>
+                </label>
+            </div>
+
+            <div class="input-area">
+                <textarea id="promptInput" placeholder="Enter your prompt or request (e.g. 'Compare Rust vs Go for high-concurrency microservices with code examples')..."></textarea>
+            </div>
+
+            <!-- Quick Preset Prompts -->
+            <div class="preset-prompts">
+                <span class="preset-label">Presets:</span>
+                <button class="preset-btn" data-preset="Explain Quantum Computing simply in 3 bullet points with an analogy.">Quantum Computing</button>
+                <button class="preset-btn" data-preset="Write a high-performance Python script for scraping web data with error handling and retry logic.">Python Web Scraper</button>
+                <button class="preset-btn" data-preset="Refactor this code for optimal execution speed and memory efficiency: function fib(n) { return n<=1?n:fib(n-1)+fib(n-2); }">Code Refactor</button>
+                <button class="preset-btn" data-preset="Compare PostgreSQL vs MongoDB for a real-time analytics pipeline. Highlight pros, cons, and recommendations.">PostgreSQL vs MongoDB</button>
+            </div>
+
+            <div class="action-bar">
+                <div class="mode-toggle">
+                    <label for="synthesizeToggle" class="switch-label">
+                        <input type="checkbox" id="synthesizeToggle" checked>
+                        <span class="slider"></span>
+                        <span class="toggle-text">Synthesize AI Consensus Master Response</span>
+                    </label>
+                </div>
+                <button id="runOrchestratorBtn" class="btn btn-primary btn-lg">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                    <span>Run Multi-LLM Query</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Synthesized Consensus Output (Hero Output) -->
+        <section id="consensusSection" class="card consensus-card hidden">
+            <div class="card-header">
+                <div class="consensus-title">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+                    <h2>Synthesized AI Consensus Response</h2>
+                </div>
+                <div class="consensus-actions">
+                    <span id="consensusBadge" class="tag tag-success">4 Models Harmonized</span>
+                    <button id="copyConsensusBtn" class="icon-btn-text">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        <span>Copy Master Result</span>
+                    </button>
+                </div>
+            </div>
+            <div id="consensusContent" class="markdown-body"></div>
+        </section>
+
+        <!-- Side-by-Side Model Comparison Grid -->
+        <section id="comparisonSection" class="comparison-grid">
+            <!-- Card 1: ChatGPT -->
+            <div class="card model-card provider-card-openai">
+                <div class="model-card-header">
+                    <div class="model-brand">
+                        <span class="provider-dot provider-openai"></span>
+                        <h3>ChatGPT</h3>
+                        <span class="model-version">GPT-4o</span>
+                    </div>
+                    <span class="status-indicator" id="statusOpenAI">Ready</span>
+                </div>
+                <div class="model-response-body" id="responseOpenAI">
+                    <p class="placeholder-text">Output will appear here when query is executed...</p>
+                </div>
+            </div>
+
+            <!-- Card 2: Claude -->
+            <div class="card model-card provider-card-claude">
+                <div class="model-card-header">
+                    <div class="model-brand">
+                        <span class="provider-dot provider-claude"></span>
+                        <h3>Claude</h3>
+                        <span class="model-version">3.5 Sonnet</span>
+                    </div>
+                    <span class="status-indicator" id="statusClaude">Ready</span>
+                </div>
+                <div class="model-response-body" id="responseClaude">
+                    <p class="placeholder-text">Output will appear here when query is executed...</p>
+                </div>
+            </div>
+
+            <!-- Card 3: Gemini -->
+            <div class="card model-card provider-card-gemini">
+                <div class="model-card-header">
+                    <div class="model-brand">
+                        <span class="provider-dot provider-gemini"></span>
+                        <h3>Gemini</h3>
+                        <span class="model-version">1.5 Pro</span>
+                    </div>
+                    <span class="status-indicator" id="statusGemini">Ready</span>
+                </div>
+                <div class="model-response-body" id="responseGemini">
+                    <p class="placeholder-text">Output will appear here when query is executed...</p>
+                </div>
+            </div>
+
+            <!-- Card 4: Ollama -->
+            <div class="card model-card provider-card-ollama">
+                <div class="model-card-header">
+                    <div class="model-brand">
+                        <span class="provider-dot provider-ollama"></span>
+                        <h3>Ollama</h3>
+                        <span class="model-version">Local LLM</span>
+                    </div>
+                    <span class="status-indicator" id="statusOllama">Ready</span>
+                </div>
+                <div class="model-response-body" id="responseOllama">
+                    <p class="placeholder-text">Output will appear here when query is executed...</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- API Key Settings Modal -->
+    <div id="apiKeyModal" class="modal-overlay hidden">
+        <div class="modal-content card">
+            <div class="card-header">
+                <h2>API Key Configuration</h2>
+                <span class="sub-label">Keys are saved locally in your browser/app storage and never shared</span>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label for="keyOpenAI">OpenAI API Key (ChatGPT):</label>
+                    <input type="password" id="keyOpenAI" placeholder="sk-proj-...">
+                </div>
+                <div class="input-group">
+                    <label for="keyClaude">Anthropic API Key (Claude):</label>
+                    <input type="password" id="keyClaude" placeholder="sk-ant-api03-...">
+                </div>
+                <div class="input-group">
+                    <label for="keyGemini">Google Gemini API Key:</label>
+                    <input type="password" id="keyGemini" placeholder="AIzaSy...">
+                </div>
+                <div class="input-group">
+                    <label for="urlOllama">Ollama Local API Endpoint:</label>
+                    <input type="text" id="urlOllama" value="http://localhost:11434" placeholder="http://localhost:11434">
+                </div>
+                <p class="hint-text">💡 <strong>Note:</strong> If no API keys are entered, PolyMind AI runs in high-fidelity simulation mode so you can evaluate consensus synthesis instantly!</p>
+            </div>
+            <div class="modal-footer">
+                <button id="saveApiKeysBtn" class="btn btn-primary">Save Settings</button>
+                <button id="closeApiKeysBtn" class="btn btn-secondary">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Highlight.js for code rendering -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <!-- Marked parser for Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

@@ -196,6 +196,7 @@ async function fetchClaude(prompt) {
                 headers: {
                     "x-api-key": apiKey,
                     "anthropic-version": "2023-06-01",
+                    "anthropic-dangerously-allow-browser": "true",
                     "content-type": "application/json"
                 },
                 body: JSON.stringify({

@@ -26,13 +26,18 @@
                 </div>
                 <div class="brand-text">
                     <h1>PolyMind <span>AI</span></h1>
-                    <span class="badge">Multi-LLM Consensus v1.0</span>
+                    <span class="badge">Multi-LLM Consensus v1.2</span>
                 </div>
             </div>
             <div class="header-actions">
-                <button id="apiKeyModalBtn" class="btn btn-secondary btn-sm" title="Configure API Keys">
+                <button id="historyModalBtn" class="btn btn-secondary btn-sm" title="View Query History">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    <span>History</span>
+                    <span id="historyCountBadge" class="count-pill">0</span>
+                </button>
+                <button id="apiKeyModalBtn" class="btn btn-secondary btn-sm" title="Configure API Keys & Models">
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.778-7.778zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
-                    <span>API Keys</span>
+                    <span>Config</span>
                 </button>
                 <button id="themeToggleBtn" class="icon-btn" title="Toggle Theme">
                     <svg class="sun-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg>
@@ -43,79 +48,198 @@
 
         <!-- Prompt Control Center -->
         <section class="card prompt-card">
-            <div class="card-header">
-                <h2>Prompt Orchestrator</h2>
-                <span class="sub-label">Query ChatGPT, Claude, Gemini & Ollama simultaneously</span>
+            <div class="card-header prompt-header-flex">
+                <div>
+                    <h2>Prompt Orchestrator</h2>
+                    <span class="sub-label">Query ChatGPT, Claude, Gemini & Ollama simultaneously</span>
+                </div>
+                <!-- Orchestrator Mode Selector -->
+                <div class="mode-pills">
+                    <button class="mode-pill active" data-mode="consensus" title="Synthesize master agreement and best unified solution">
+                        <span>🎯 Consensus</span>
+                    </button>
+                    <button class="mode-pill" data-mode="code-battle" title="Pit models to generate optimal, performant code">
+                        <span>⚔️ Code Battle</span>
+                    </button>
+                    <button class="mode-pill" data-mode="fact-check" title="Expose contradictions, differences, and hallucinations">
+                        <span>🔍 Fact Check</span>
+                    </button>
+                    <button class="mode-pill" data-mode="debate" title="Explore multi-perspective trade-offs and arguments">
+                        <span>⚖️ Debate</span>
+                    </button>
+                </div>
             </div>
 
-            <!-- Active Provider Toggles -->
+            <!-- Active Provider & Model Selector Bar -->
             <div class="provider-selector-bar">
-                <label class="provider-chip active" data-provider="openai">
-                    <input type="checkbox" id="checkOpenAI" checked>
-                    <span class="provider-dot provider-openai"></span>
-                    <span>ChatGPT (GPT-4o)</span>
-                </label>
-                <label class="provider-chip active" data-provider="claude">
-                    <input type="checkbox" id="checkClaude" checked>
-                    <span class="provider-dot provider-claude"></span>
-                    <span>Claude (3.5 Sonnet)</span>
-                </label>
-                <label class="provider-chip active" data-provider="gemini">
-                    <input type="checkbox" id="checkGemini" checked>
-                    <span class="provider-dot provider-gemini"></span>
-                    <span>Gemini (1.5 Pro)</span>
-                </label>
-                <label class="provider-chip active" data-provider="ollama">
-                    <input type="checkbox" id="checkOllama" checked>
-                    <span class="provider-dot provider-ollama"></span>
-                    <span>Ollama (Local LLM)</span>
-                </label>
+                <div class="provider-chip-wrapper">
+                    <label class="provider-chip active" data-provider="openai">
+                        <input type="checkbox" id="checkOpenAI" checked>
+                        <span class="provider-dot provider-openai"></span>
+                        <span class="provider-label">ChatGPT</span>
+                    </label>
+                    <select id="selectModelOpenAI" class="model-select-inline" title="Select OpenAI Model">
+                        <option value="gpt-4o">GPT-4o</option>
+                        <option value="gpt-4o-mini">GPT-4o Mini</option>
+                        <option value="o1-mini">o1-mini</option>
+                    </select>
+                </div>
+
+                <div class="provider-chip-wrapper">
+                    <label class="provider-chip active" data-provider="claude">
+                        <input type="checkbox" id="checkClaude" checked>
+                        <span class="provider-dot provider-claude"></span>
+                        <span class="provider-label">Claude</span>
+                    </label>
+                    <select id="selectModelClaude" class="model-select-inline" title="Select Claude Model">
+                        <option value="claude-3-5-sonnet-20241022">3.5 Sonnet</option>
+                        <option value="claude-3-5-haiku-20241022">3.5 Haiku</option>
+                        <option value="claude-3-opus-20240229">3 Opus</option>
+                    </select>
+                </div>
+
+                <div class="provider-chip-wrapper">
+                    <label class="provider-chip active" data-provider="gemini">
+                        <input type="checkbox" id="checkGemini" checked>
+                        <span class="provider-dot provider-gemini"></span>
+                        <span class="provider-label">Gemini</span>
+                    </label>
+                    <select id="selectModelGemini" class="model-select-inline" title="Select Gemini Model">
+                        <option value="gemini-1.5-pro">1.5 Pro</option>
+                        <option value="gemini-1.5-flash">1.5 Flash</option>
+                        <option value="gemini-2.0-flash-exp">2.0 Flash</option>
+                    </select>
+                </div>
+
+                <div class="provider-chip-wrapper">
+                    <label class="provider-chip active" data-provider="ollama">
+                        <input type="checkbox" id="checkOllama" checked>
+                        <span class="provider-dot provider-ollama"></span>
+                        <span class="provider-label">Ollama</span>
+                    </label>
+                    <select id="selectModelOllama" class="model-select-inline" title="Select Ollama Model">
+                        <option value="llama3.2:3b">llama3.2:3b</option>
+                        <option value="llama3.2">llama3.2</option>
+                        <option value="mistral">mistral</option>
+                        <option value="deepseek-r1:8b">deepseek-r1:8b</option>
+                        <option value="qwen2.5-coder">qwen2.5-coder</option>
+                    </select>
+                </div>
             </div>
 
             <div class="input-area">
-                <textarea id="promptInput" placeholder="Enter your prompt or request (e.g. 'Compare Rust vs Go for high-concurrency microservices with code examples')..."></textarea>
+                <textarea id="promptInput" rows="4" placeholder="Enter your prompt or challenge (e.g. 'Compare Rust vs Go for high-concurrency microservices with architecture and benchmarks')..."></textarea>
+                <div class="input-controls-row">
+                    <div class="creativity-slider-wrapper">
+                        <span class="slider-label">Temperature:</span>
+                        <input type="range" id="tempSlider" min="0" max="1" step="0.1" value="0.7">
+                        <span id="tempValueBadge" class="temp-badge">0.7 (Balanced)</span>
+                    </div>
+                    <span class="shortcut-hint">Tip: <strong>Ctrl + Enter</strong> to dispatch</span>
+                </div>
             </div>
 
             <!-- Quick Preset Prompts -->
             <div class="preset-prompts">
                 <span class="preset-label">Presets:</span>
-                <button class="preset-btn" data-preset="Explain Quantum Computing simply in 3 bullet points with an analogy.">Quantum Computing</button>
-                <button class="preset-btn" data-preset="Write a high-performance Python script for scraping web data with error handling and retry logic.">Python Web Scraper</button>
-                <button class="preset-btn" data-preset="Refactor this code for optimal execution speed and memory efficiency: function fib(n) { return n<=1?n:fib(n-1)+fib(n-2); }">Code Refactor</button>
-                <button class="preset-btn" data-preset="Compare PostgreSQL vs MongoDB for a real-time analytics pipeline. Highlight pros, cons, and recommendations.">PostgreSQL vs MongoDB</button>
+                <button class="preset-btn" data-preset="Explain Quantum Computing simply in 3 bullet points with a relatable real-world analogy.">Quantum Computing</button>
+                <button class="preset-btn" data-preset="Write a high-performance Python script for resilient web scraping with exponential backoff, rotating headers, and async IO.">Resilient Web Scraper</button>
+                <button class="preset-btn" data-preset="Refactor this recursive fibonacci code for optimal O(n) or O(1) space and execution speed: function fib(n) { return n<=1?n:fib(n-1)+fib(n-2); }">Code Refactor</button>
+                <button class="preset-btn" data-preset="Compare PostgreSQL vs MongoDB for high-throughput real-time streaming analytics. Detail schema design, indexing, and failure modes.">PostgreSQL vs MongoDB</button>
+                <button class="preset-btn" data-preset="Analyze the architectural differences and trade-offs between REST, GraphQL, and gRPC for distributed microservices.">REST vs GraphQL vs gRPC</button>
             </div>
 
             <div class="action-bar">
-                <div class="mode-toggle">
-                    <label for="synthesizeToggle" class="switch-label">
-                        <input type="checkbox" id="synthesizeToggle" checked>
-                        <span class="slider"></span>
-                        <span class="toggle-text">Synthesize AI Consensus Master Response</span>
-                    </label>
+                <div class="action-bar-left">
+                    <div class="mode-toggle">
+                        <label for="synthesizeToggle" class="switch-label">
+                            <input type="checkbox" id="synthesizeToggle" checked>
+                            <span class="slider"></span>
+                            <span class="toggle-text">Synthesize AI Consensus Master Response</span>
+                        </label>
+                    </div>
                 </div>
-                <button id="runOrchestratorBtn" class="btn btn-primary btn-lg">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                    <span>Run Multi-LLM Query</span>
-                </button>
+                <div class="action-bar-right">
+                    <button id="clearPromptBtn" class="btn btn-secondary btn-md" title="Clear Input and Reset">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        <span>Clear</span>
+                    </button>
+                    <button id="runOrchestratorBtn" class="btn btn-primary btn-lg">
+                        <svg class="play-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                        <span class="spinner hidden"></span>
+                        <span id="runBtnText">Run Multi-LLM Query</span>
+                    </button>
+                </div>
             </div>
         </section>
 
         <!-- Synthesized Consensus Output (Hero Output) -->
         <section id="consensusSection" class="card consensus-card hidden">
-            <div class="card-header">
+            <div class="card-header consensus-header-flex">
                 <div class="consensus-title">
-                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
-                    <h2>Synthesized AI Consensus Response</h2>
+                    <div class="consensus-icon-pulse">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+                    </div>
+                    <div>
+                        <h2>Synthesized AI Consensus Response</h2>
+                        <div class="consensus-meta-line">
+                            <span id="consensusBadge" class="tag tag-success">4 Models Harmonized</span>
+                            <span id="consensusLatencyBadge" class="tag tag-info">⚡ Latency: 1.2s</span>
+                            <span id="consensusSynthesizerBadge" class="tag tag-neutral">Engine: Dynamic</span>
+                        </div>
+                    </div>
                 </div>
                 <div class="consensus-actions">
-                    <span id="consensusBadge" class="tag tag-success">4 Models Harmonized</span>
-                    <button id="copyConsensusBtn" class="icon-btn-text">
+                    <button id="copyConsensusBtn" class="btn btn-secondary btn-sm" title="Copy Master Result to Clipboard">
                         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                        <span>Copy Master Result</span>
+                        <span>Copy</span>
+                    </button>
+                    <button id="shareConsensusBtn" class="btn btn-secondary btn-sm" title="Native Android / Web Share">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                        <span>Share</span>
+                    </button>
+                    <button id="exportConsensusBtn" class="btn btn-secondary btn-sm" title="Export Consensus as Markdown File">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        <span>Export</span>
                     </button>
                 </div>
             </div>
-            <div id="consensusContent" class="markdown-body"></div>
+
+            <!-- View Switcher Tabs -->
+            <div class="consensus-tabs">
+                <button class="consensus-tab-btn active" data-tab="synthesis">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    <span>Master Synthesis</span>
+                </button>
+                <button class="consensus-tab-btn" data-tab="matrix">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></svg>
+                    <span>Agreement & Metrics Matrix</span>
+                </button>
+            </div>
+
+            <!-- Tab Content 1: Master Synthesis -->
+            <div id="consensusContent" class="markdown-body tab-pane active"></div>
+
+            <!-- Tab Content 2: Comparison & Metrics Matrix -->
+            <div id="consensusMatrix" class="consensus-matrix-container tab-pane">
+                <div class="matrix-table-wrapper">
+                    <table class="matrix-table">
+                        <thead>
+                            <tr>
+                                <th>AI Model</th>
+                                <th>Version</th>
+                                <th>Status</th>
+                                <th>Latency</th>
+                                <th>Word Count</th>
+                                <th>Core Focus / Key Stance</th>
+                            </tr>
+                        </thead>
+                        <tbody id="matrixTableBody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </section>
 
         <!-- Side-by-Side Model Comparison Grid -->
@@ -125,10 +249,24 @@
                 <div class="model-card-header">
                     <div class="model-brand">
                         <span class="provider-dot provider-openai"></span>
-                        <h3>ChatGPT</h3>
-                        <span class="model-version">GPT-4o</span>
+                        <div class="model-title-stack">
+                            <h3>ChatGPT</h3>
+                            <span class="model-version" id="versionBadgeOpenAI">GPT-4o</span>
+                        </div>
                     </div>
-                    <span class="status-indicator" id="statusOpenAI">Ready</span>
+                    <div class="model-card-meta">
+                        <span class="metric-pill" id="latencyOpenAI">--</span>
+                        <span class="metric-pill words" id="wordsOpenAI">--</span>
+                        <span class="status-indicator" id="statusOpenAI">Ready</span>
+                    </div>
+                    <div class="card-action-icons">
+                        <button class="card-icon-btn copy-card-btn" data-provider="OpenAI" title="Copy response">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        </button>
+                        <button class="card-icon-btn expand-card-btn" data-provider="OpenAI" title="Expand view">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+                        </button>
+                    </div>
                 </div>
                 <div class="model-response-body" id="responseOpenAI">
                     <p class="placeholder-text">Output will appear here when query is executed...</p>
@@ -140,10 +278,24 @@
                 <div class="model-card-header">
                     <div class="model-brand">
                         <span class="provider-dot provider-claude"></span>
-                        <h3>Claude</h3>
-                        <span class="model-version">3.5 Sonnet</span>
+                        <div class="model-title-stack">
+                            <h3>Claude</h3>
+                            <span class="model-version" id="versionBadgeClaude">3.5 Sonnet</span>
+                        </div>
                     </div>
-                    <span class="status-indicator" id="statusClaude">Ready</span>
+                    <div class="model-card-meta">
+                        <span class="metric-pill" id="latencyClaude">--</span>
+                        <span class="metric-pill words" id="wordsClaude">--</span>
+                        <span class="status-indicator" id="statusClaude">Ready</span>
+                    </div>
+                    <div class="card-action-icons">
+                        <button class="card-icon-btn copy-card-btn" data-provider="Claude" title="Copy response">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        </button>
+                        <button class="card-icon-btn expand-card-btn" data-provider="Claude" title="Expand view">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+                        </button>
+                    </div>
                 </div>
                 <div class="model-response-body" id="responseClaude">
                     <p class="placeholder-text">Output will appear here when query is executed...</p>
@@ -155,10 +307,24 @@
                 <div class="model-card-header">
                     <div class="model-brand">
                         <span class="provider-dot provider-gemini"></span>
-                        <h3>Gemini</h3>
-                        <span class="model-version">1.5 Pro</span>
+                        <div class="model-title-stack">
+                            <h3>Gemini</h3>
+                            <span class="model-version" id="versionBadgeGemini">1.5 Pro</span>
+                        </div>
                     </div>
-                    <span class="status-indicator" id="statusGemini">Ready</span>
+                    <div class="model-card-meta">
+                        <span class="metric-pill" id="latencyGemini">--</span>
+                        <span class="metric-pill words" id="wordsGemini">--</span>
+                        <span class="status-indicator" id="statusGemini">Ready</span>
+                    </div>
+                    <div class="card-action-icons">
+                        <button class="card-icon-btn copy-card-btn" data-provider="Gemini" title="Copy response">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        </button>
+                        <button class="card-icon-btn expand-card-btn" data-provider="Gemini" title="Expand view">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+                        </button>
+                    </div>
                 </div>
                 <div class="model-response-body" id="responseGemini">
                     <p class="placeholder-text">Output will appear here when query is executed...</p>
@@ -170,10 +336,24 @@
                 <div class="model-card-header">
                     <div class="model-brand">
                         <span class="provider-dot provider-ollama"></span>
-                        <h3>Ollama</h3>
-                        <span class="model-version">Local LLM</span>
+                        <div class="model-title-stack">
+                            <h3>Ollama</h3>
+                            <span class="model-version" id="versionBadgeOllama">Local LLM</span>
+                        </div>
                     </div>
-                    <span class="status-indicator" id="statusOllama">Ready</span>
+                    <div class="model-card-meta">
+                        <span class="metric-pill" id="latencyOllama">--</span>
+                        <span class="metric-pill words" id="wordsOllama">--</span>
+                        <span class="status-indicator" id="statusOllama">Ready</span>
+                    </div>
+                    <div class="card-action-icons">
+                        <button class="card-icon-btn copy-card-btn" data-provider="Ollama" title="Copy response">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        </button>
+                        <button class="card-icon-btn expand-card-btn" data-provider="Ollama" title="Expand view">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+                        </button>
+                    </div>
                 </div>
                 <div class="model-response-body" id="responseOllama">
                     <p class="placeholder-text">Output will appear here when query is executed...</p>
@@ -182,38 +362,195 @@
         </section>
     </div>
 
-    <!-- API Key Settings Modal -->
+    <!-- API Key & Model Settings Modal -->
     <div id="apiKeyModal" class="modal-overlay hidden">
-        <div class="modal-content card">
-            <div class="card-header">
-                <h2>API Key Configuration</h2>
-                <span class="sub-label">Keys are saved locally in your browser/app storage and never shared</span>
+        <div class="modal-content card modal-lg">
+            <div class="card-header modal-header-flex">
+                <div>
+                    <h2>API Keys & Model Configuration</h2>
+                    <span class="sub-label">Keys are saved locally in private storage and never sent to intermediary servers</span>
+                </div>
+                <button id="closeApiKeysIconBtn" class="close-icon-btn">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="input-group">
-                    <label for="keyOpenAI">OpenAI API Key (ChatGPT):</label>
-                    <input type="password" id="keyOpenAI" placeholder="sk-proj-...">
+                <!-- OpenAI Config -->
+                <div class="config-section">
+                    <div class="config-section-header">
+                        <span class="provider-dot provider-openai"></span>
+                        <h4>OpenAI (ChatGPT)</h4>
+                    </div>
+                    <div class="input-grid">
+                        <div class="input-group flex-2">
+                            <label for="keyOpenAI">API Key:</label>
+                            <input type="password" id="keyOpenAI" placeholder="sk-proj-...">
+                        </div>
+                        <div class="input-group flex-1">
+                            <label for="modalModelOpenAI">Default Model:</label>
+                            <select id="modalModelOpenAI">
+                                <option value="gpt-4o">GPT-4o (Flagship)</option>
+                                <option value="gpt-4o-mini">GPT-4o Mini (Fast & Cheap)</option>
+                                <option value="o1-mini">o1-mini (Reasoning)</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
-                <div class="input-group">
-                    <label for="keyClaude">Anthropic API Key (Claude):</label>
-                    <input type="password" id="keyClaude" placeholder="sk-ant-api03-...">
+
+                <!-- Claude Config -->
+                <div class="config-section">
+                    <div class="config-section-header">
+                        <span class="provider-dot provider-claude"></span>
+                        <h4>Anthropic (Claude)</h4>
+                    </div>
+                    <div class="input-grid">
+                        <div class="input-group flex-2">
+                            <label for="keyClaude">API Key:</label>
+                            <input type="password" id="keyClaude" placeholder="sk-ant-api03-...">
+                        </div>
+                        <div class="input-group flex-1">
+                            <label for="modalModelClaude">Default Model:</label>
+                            <select id="modalModelClaude">
+                                <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
+                                <option value="claude-3-5-haiku-20241022">Claude 3.5 Haiku</option>
+                                <option value="claude-3-opus-20240229">Claude 3 Opus</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
-                <div class="input-group">
-                    <label for="keyGemini">Google Gemini API Key:</label>
-                    <input type="password" id="keyGemini" placeholder="AIzaSy...">
+
+                <!-- Gemini Config -->
+                <div class="config-section">
+                    <div class="config-section-header">
+                        <span class="provider-dot provider-gemini"></span>
+                        <h4>Google Gemini</h4>
+                    </div>
+                    <div class="input-grid">
+                        <div class="input-group flex-2">
+                            <label for="keyGemini">API Key:</label>
+                            <input type="password" id="keyGemini" placeholder="AIzaSy...">
+                        </div>
+                        <div class="input-group flex-1">
+                            <label for="modalModelGemini">Default Model:</label>
+                            <select id="modalModelGemini">
+                                <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                                <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                                <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
-                <div class="input-group">
-                    <label for="urlOllama">Ollama Local API Endpoint:</label>
-                    <input type="text" id="urlOllama" value="http://localhost:11434" placeholder="http://localhost:11434">
+
+                <!-- Ollama Local Config -->
+                <div class="config-section">
+                    <div class="config-section-header">
+                        <span class="provider-dot provider-ollama"></span>
+                        <h4>Ollama (Local LLM)</h4>
+                    </div>
+                    <div class="input-grid">
+                        <div class="input-group flex-2">
+                            <label for="urlOllama">Local API Endpoint:</label>
+                            <input type="text" id="urlOllama" value="http://localhost:11434" placeholder="http://localhost:11434">
+                        </div>
+                        <div class="input-group flex-1">
+                            <label for="modalModelOllama">Model Name:</label>
+                            <input type="text" id="modalModelOllama" value="llama3.2:3b" placeholder="llama3.2, mistral...">
+                        </div>
+                    </div>
+                    <div class="ollama-detect-row">
+                        <button id="detectOllamaBtn" class="btn btn-secondary btn-sm">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                            <span>Auto-Detect Installed Ollama Models</span>
+                        </button>
+                        <span id="ollamaStatusMsg" class="sub-label"></span>
+                    </div>
                 </div>
-                <p class="hint-text">💡 <strong>Note:</strong> If no API keys are entered, PolyMind AI runs in high-fidelity simulation mode so you can evaluate consensus synthesis instantly!</p>
+
+                <!-- Consensus Synthesizer Config -->
+                <div class="config-section">
+                    <div class="config-section-header">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+                        <h4>Consensus Engine Synthesizer Preference</h4>
+                    </div>
+                    <div class="input-group">
+                        <label for="selectSynthesizerProvider">Synthesizer Driver:</label>
+                        <select id="selectSynthesizerProvider">
+                            <option value="auto">Auto (Fastest available active API model)</option>
+                            <option value="gemini">Google Gemini</option>
+                            <option value="openai">OpenAI (ChatGPT)</option>
+                            <option value="claude">Anthropic (Claude)</option>
+                            <option value="ollama">Ollama (Local LLM)</option>
+                            <option value="heuristic">Smart Heuristic Analyzer (Local Client-Side)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <p class="hint-text">💡 <strong>Zero Setup Needed:</strong> If no API keys are entered, PolyMind AI runs in high-fidelity simulation mode with full dynamic consensus synthesis!</p>
             </div>
             <div class="modal-footer">
-                <button id="saveApiKeysBtn" class="btn btn-primary">Save Settings</button>
-                <button id="closeApiKeysBtn" class="btn btn-secondary">Close</button>
+                <button id="clearAllKeysBtn" class="btn btn-danger btn-sm">Clear Keys</button>
+                <div class="footer-right-actions">
+                    <button id="closeApiKeysBtn" class="btn btn-secondary">Close</button>
+                    <button id="saveApiKeysBtn" class="btn btn-primary">Save Settings</button>
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- History Drawer Modal -->
+    <div id="historyModal" class="modal-overlay hidden">
+        <div class="modal-content card modal-lg">
+            <div class="card-header modal-header-flex">
+                <div>
+                    <h2>Orchestration History</h2>
+                    <span class="sub-label">Saved queries and consensus comparisons on this device</span>
+                </div>
+                <button id="closeHistoryIconBtn" class="close-icon-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="history-controls-bar">
+                    <input type="text" id="historySearchInput" placeholder="Search past prompts or topics..." class="search-input">
+                    <button id="exportHistoryBtn" class="btn btn-secondary btn-sm" title="Export History as JSON">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        <span>Export JSON</span>
+                    </button>
+                    <button id="clearHistoryBtn" class="btn btn-danger btn-sm" title="Clear all history">
+                        <span>Clear All</span>
+                    </button>
+                </div>
+                <div id="historyListContainer" class="history-list">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="closeHistoryBtn" class="btn btn-secondary">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Expanded Model Inspection Modal -->
+    <div id="expandedCardModal" class="modal-overlay hidden">
+        <div class="modal-content card modal-xl">
+            <div class="card-header modal-header-flex">
+                <div class="expanded-modal-title">
+                    <span id="expandedDot" class="provider-dot"></span>
+                    <h2 id="expandedModelTitle">Model Output Detail</h2>
+                    <span id="expandedModelBadge" class="badge">--</span>
+                </div>
+                <div class="expanded-actions">
+                    <button id="expandedCopyBtn" class="btn btn-secondary btn-sm">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        <span>Copy Code & Output</span>
+                    </button>
+                    <button id="closeExpandedIconBtn" class="close-icon-btn">&times;</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div id="expandedContent" class="markdown-body"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Element -->
+    <div id="toastNotification" class="toast hidden"></div>
 
     <!-- Highlight.js for code rendering -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>

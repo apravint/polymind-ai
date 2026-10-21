@@ -74,6 +74,15 @@ public class MainActivity extends Activity {
             Intent shareIntent = Intent.createChooser(sendIntent, "Share PolyMind AI Consensus");
             context.startActivity(shareIntent);
         }
+
+        @JavascriptInterface
+        public void copyToClipboard(String text) {
+            android.content.ClipboardManager clipboard = (android.content.ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+            android.content.ClipData clip = android.content.ClipData.newPlainText("PolyMind AI", text);
+            if (clipboard != null) {
+                clipboard.setPrimaryClip(clip);
+            }
+        }
     }
 
     @Override
